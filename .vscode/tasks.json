@@ -1,0 +1,95 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build-android-debug",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "-f",
+                "net9.0-android",
+                "-c",
+                "Debug"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$msCompile",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "install-android-debug",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-NoProfile",
+                "-Command",
+                "$$apk = Get-ChildItem '${workspaceFolder}\\bin\\Debug\\net9.0-android\\*\\*.apk' -Exclude '*-Signed*' | Select-Object -First 1; if ($$apk) { adb install -r $$apk.FullName } else { Write-Host 'APK not found'; exit 1 }"
+            ],
+            "dependsOn": "build-android-debug",
+            "presentation": {
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "launch-android-app",
+            "type": "shell",
+            "command": "adb",
+            "args": [
+                "shell",
+                "am",
+                "start",
+                "-n",
+                "com.companyname.myandroidapp/com.companyname.myandroidapp.MainActivity"
+            ],
+            "dependsOn": "install-android-debug",
+            "presentation": {
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "view-logcat",
+            "type": "shell",
+            "command": "adb",
+            "args": [
+                "logcat",
+                "MyAndroidApp:V",
+                "*:S"
+            ],
+            "isBackground": true,
+            "presentation": {
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            }
+        },
+        {
+            "label": "run-android-app",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder}\\.vscode\\run-app.ps1"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared"
+            }
+        }
+    ]
+}

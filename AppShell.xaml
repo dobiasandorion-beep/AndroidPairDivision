@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="MyAndroidApp.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:MyAndroidApp"
+    Shell.FlyoutBehavior="Disabled"
+    Title="MyAndroidApp">
+
+    <!-- 画面下部のタブナビゲーション -->
+    <TabBar>
+        <!-- 対戦表タブ（左側に配置） -->
+        <Tab Title="対戦表" Icon="table_view.png">
+            <ShellContent
+                Title="対戦表"
+                ContentTemplate="{DataTemplate local:MatchPage}"
+                Route="MatchPage" />
+        </Tab>
+
+        <!-- メンバー管理タブ（中央に配置） -->
+        <Tab Title="メンバー管理" Icon="how_to_reg.png">
+            <ShellContent
+                Title="メンバー管理"
+                ContentTemplate="{DataTemplate local:MainPage}"
+                Route="MainPage" />
+        </Tab>
+        
+        <!-- 設定タブ（右側に配置） -->
+        <Tab Title="設定" Icon="settings.png">
+            <ShellContent
+                Title="設定"
+                ContentTemplate="{DataTemplate local:SettingsPage}"
+                Route="SettingsPage" />
+        </Tab>
+    </TabBar>
+
+</Shell>

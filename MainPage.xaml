@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:MyAndroidApp"
+             x:Class="MyAndroidApp.MainPage"
+             Title="メンバー管理">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:BoolToStringConverter x:Key="BooleanToStringConverter" />
+            <local:BoolToColorConverter x:Key="BooleanToColorConverter" />
+            <local:MemberTypeToVisibilityConverter x:Key="MemberTypeToVisibilityConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid>
+        <!-- メイン画面（一覧表示と新規ボタン） -->
+        <Grid RowDefinitions="*, Auto" Padding="15">
+            <!-- メンバー一覧 -->
+            <CollectionView x:Name="MembersCollectionView" 
+                            Grid.Row="0" 
+                            SelectionMode="None">
+                <CollectionView.EmptyView>
+                    <Label Text="登録されているメンバーがいません。" HorizontalOptions="Center" VerticalOptions="Center" TextColor="Gray" />
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="15" Margin="0,5" BorderColor="#E0E0E0" CornerRadius="8" HasShadow="False" BackgroundColor="{Binding GenderBackgroundColor}">
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnMemberTapped" CommandParameter="{Binding .}" />
+                            </Frame.GestureRecognizers>
+                            
+                            <Grid ColumnDefinitions="*, Auto">
+                                <!-- 左側：名前・性別など -->
+                                <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+                                    <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                                        <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" TextColor="#333333" />
+                                        <Label Text="{Binding Gender, StringFormat='({0})'}" FontSize="14" TextColor="#555555" VerticalOptions="Center" Margin="0,2,0,0"/>
+                                        <Border Stroke="Transparent" BackgroundColor="#EEEEEE" Padding="5,1" StrokeShape="RoundRectangle 4,4,4,4" IsVisible="{Binding Type, Converter={StaticResource MemberTypeToVisibilityConverter}}">
+                                            <Label Text="ビジター" FontSize="10" TextColor="#666666" />
+                                        </Border>
+                                    </HorizontalStackLayout>
+                                    
+                                    <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                                        <Label Text="{Binding Reading}" FontSize="12" TextColor="#888888" />
+                                        <Frame Padding="5,2" BackgroundColor="#E3F2FD" CornerRadius="4" HasShadow="False" BorderColor="Transparent">
+                                            <Label Text="{Binding ParticipationRate, StringFormat='参加率: {0}'}" FontSize="10" TextColor="#1976D2" FontAttributes="Bold" />
+                                        </Frame>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                                
+                                <!-- 右側：参加状態と回数 -->
+                                <Frame Grid.Column="1" 
+                                       BackgroundColor="{Binding IsParticipating, Converter={StaticResource BooleanToColorConverter}}" 
+                                       CornerRadius="6" 
+                                       Padding="15,5" 
+                                       HasShadow="False"
+                                       BorderColor="Transparent"
+                                       VerticalOptions="Center" 
+                                       HorizontalOptions="End"
+                                       WidthRequest="80">
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnToggleParticipationClicked" CommandParameter="{Binding .}" />
+                                    </Frame.GestureRecognizers>
+                                    
+                                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                                        <Label Text="{Binding IsParticipating, Converter={StaticResource BooleanToStringConverter}}" 
+                                               TextColor="White" 
+                                               FontSize="14" 
+                                               FontAttributes="Bold" 
+                                               HorizontalOptions="Center" />
+                                        <Label Text="{Binding MatchRatioText}" 
+                                               TextColor="White" 
+                                               FontSize="12" 
+                                               HorizontalOptions="Center" />
+                                    </VerticalStackLayout>
+                                </Frame>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- 新規ボタンエリア（画面下部） -->
+            <Grid Grid.Row="1" ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,15,0,0">
+                <Button Grid.Column="0" 
+                        Text="メンバー登録" 
+                        Clicked="OnNewMemberClicked" 
+                        BackgroundColor="#2196F3" 
+                        TextColor="White" 
+                        HeightRequest="50" 
+                        FontAttributes="Bold" 
+                        CornerRadius="8" />
+                <Button Grid.Column="1" 
+                        Text="ビジター登録" 
+                        Clicked="OnNewVisitorClicked" 
+                        BackgroundColor="#FF9800" 
+                        TextColor="White" 
+                        HeightRequest="50" 
+                        FontAttributes="Bold" 
+                        CornerRadius="8" />
+            </Grid>
+        </Grid>
+
+        <!-- ダイアログ（オーバーレイ表示） -->
+        <Grid x:Name="DialogOverlay" BackgroundColor="#80000000" IsVisible="False">
+            <ContentView BackgroundColor="Transparent">
+                <ContentView.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnOverlayTapped" />
+                </ContentView.GestureRecognizers>
+            </ContentView>
+
+            <Frame VerticalOptions="Center" HorizontalOptions="Center" WidthRequest="320" Padding="20" CornerRadius="12" HasShadow="True" BackgroundColor="White">
+                <VerticalStackLayout Spacing="15">
+                    <Label x:Name="DialogTitle" Text="メンバー登録" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center" TextColor="#333333" />
+                    
+                    <Entry x:Name="NameEntry" Placeholder="名前" TextColor="#333333" PlaceholderColor="#999999" BackgroundColor="#F5F5F5" />
+                    <Entry x:Name="ReadingEntry" Placeholder="読み方 (フリガナ)" TextColor="#333333" PlaceholderColor="#999999" BackgroundColor="#F5F5F5" />
+                    
+                    <VerticalStackLayout Spacing="15" Margin="0,5,0,0">
+                        <!-- 性別選択 -->
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="性別" FontSize="12" TextColor="#888888" />
+                            <Border Stroke="Transparent" BackgroundColor="#E0E0E0" Padding="2" StrokeShape="RoundRectangle 8,8,8,8">
+                                <Grid ColumnDefinitions="*, *" ColumnSpacing="0">
+                                    <Frame x:Name="GenderMaleFrame" Grid.Column="0" Padding="0,8" HasShadow="False" CornerRadius="6" BackgroundColor="White">
+                                        <Frame.GestureRecognizers><TapGestureRecognizer Tapped="OnGenderMaleTapped" /></Frame.GestureRecognizers>
+                                        <Label x:Name="GenderMaleLabel" Text="男性" TextColor="#333333" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Frame>
+                                    <Frame x:Name="GenderFemaleFrame" Grid.Column="1" Padding="0,8" HasShadow="False" CornerRadius="6" BackgroundColor="Transparent">
+                                        <Frame.GestureRecognizers><TapGestureRecognizer Tapped="OnGenderFemaleTapped" /></Frame.GestureRecognizers>
+                                        <Label x:Name="GenderFemaleLabel" Text="女性" TextColor="#888888" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Frame>
+                                </Grid>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- 参加率選択 -->
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="参加率" FontSize="12" TextColor="#888888" />
+                            <Border Stroke="Transparent" BackgroundColor="#E0E0E0" Padding="2" StrokeShape="RoundRectangle 8,8,8,8">
+                                <Grid ColumnDefinitions="*, *, *" ColumnSpacing="0">
+                                    <Frame x:Name="RateHighFrame" Grid.Column="0" Padding="0,8" HasShadow="False" CornerRadius="6" BackgroundColor="Transparent">
+                                        <Frame.GestureRecognizers><TapGestureRecognizer Tapped="OnRateHighTapped" /></Frame.GestureRecognizers>
+                                        <Label x:Name="RateHighLabel" Text="高" TextColor="#888888" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Frame>
+                                    <Frame x:Name="RateMidFrame" Grid.Column="1" Padding="0,8" HasShadow="False" CornerRadius="6" BackgroundColor="White">
+                                        <Frame.GestureRecognizers><TapGestureRecognizer Tapped="OnRateMidTapped" /></Frame.GestureRecognizers>
+                                        <Label x:Name="RateMidLabel" Text="中" TextColor="#333333" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Frame>
+                                    <Frame x:Name="RateLowFrame" Grid.Column="2" Padding="0,8" HasShadow="False" CornerRadius="6" BackgroundColor="Transparent">
+                                        <Frame.GestureRecognizers><TapGestureRecognizer Tapped="OnRateLowTapped" /></Frame.GestureRecognizers>
+                                        <Label x:Name="RateLowLabel" Text="低" TextColor="#888888" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Frame>
+                                </Grid>
+                            </Border>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+
+                    <!-- ボタンエリア -->
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,15,0,0">
+                        <Button x:Name="DialogDeleteBtn" Grid.Column="0" Text="削除" Clicked="OnDeleteClicked" BackgroundColor="#F44336" TextColor="White" CornerRadius="6" />
+                        <Button Grid.Column="1" Text="保存" Clicked="OnSaveClicked" BackgroundColor="#4CAF50" TextColor="White" CornerRadius="6" />
+                    </Grid>
+                    
+                    <Button Text="キャンセル" Clicked="OnCancelClicked" BackgroundColor="Transparent" TextColor="#757575" Margin="0,5,0,0" />
+                </VerticalStackLayout>
+            </Frame>
+        </Grid>
+    </Grid>
+</ContentPage>

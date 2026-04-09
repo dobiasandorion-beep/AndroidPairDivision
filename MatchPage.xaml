@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MyAndroidApp.MatchPage"
+             Title="対戦表">
+
+    <Grid>
+        <Grid RowDefinitions="Auto, *">
+            
+            <!-- 上部ボタンエリア -->
+            <Grid Grid.Row="0" ColumnDefinitions="*, *, Auto" ColumnSpacing="10" Padding="15">
+                <Button Grid.Column="0" 
+                        Text="次の試合" 
+                        Clicked="OnNextMatchClicked" 
+                        BackgroundColor="#2196F3" 
+                        TextColor="White" 
+                        FontAttributes="Bold" 
+                        HeightRequest="50" 
+                        CornerRadius="8" />
+                <Button Grid.Column="1" 
+                        Text="キャンセル" 
+                        Clicked="OnCancelMatchClicked" 
+                        BackgroundColor="#F44336" 
+                        TextColor="White" 
+                        FontAttributes="Bold" 
+                        HeightRequest="50" 
+                        CornerRadius="8" />
+
+                <!-- タイマー表示 -->
+                <Frame Grid.Column="2" Padding="10,0" BackgroundColor="#333333" CornerRadius="8" HasShadow="False" HeightRequest="50" VerticalOptions="Center">
+                    <Label x:Name="TimerLabel" Text="--:--" TextColor="White" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" HorizontalOptions="Center" />
+                </Frame>
+            </Grid>
+
+            <!-- 対戦表の一覧表示 -->
+            <CollectionView x:Name="MatchRoundsCollectionView" Grid.Row="1" Margin="10">
+                <CollectionView.EmptyView>
+                    <Label Text="「次の試合」を押して組み合わせを作成してください" HorizontalOptions="Center" VerticalOptions="Center" TextColor="Gray" />
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="15" Margin="0,10" BorderColor="#2196F3" CornerRadius="12" HasShadow="True" BackgroundColor="{Binding BackgroundColor}">
+                            <VerticalStackLayout Spacing="15">
+                                <Label Text="{Binding RoundTitle}" FontSize="18" FontAttributes="Bold" TextColor="#2196F3" HorizontalOptions="Center" />
+                                <VerticalStackLayout Spacing="5" Margin="0,0,0,10">
+                                    <Label Text="休憩メンバー" FontSize="12" TextColor="#757575" HorizontalOptions="Center" />
+                                    <FlexLayout BindableLayout.ItemsSource="{Binding BreakMembers}" Wrap="Wrap" JustifyContent="Center">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate>
+                                                <Frame Padding="10,5" Margin="2" BackgroundColor="#E0E0E0" CornerRadius="15" HasShadow="False" BorderColor="Transparent">
+                                                    <Frame.GestureRecognizers>
+                                                        <TapGestureRecognizer Tapped="OnBreakTapped" />
+                                                    </Frame.GestureRecognizers>
+                                                    <Label Text="{Binding Name}" FontSize="14" FontAttributes="Bold" TextColor="Black" />
+                                                </Frame>
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </FlexLayout>
+                                </VerticalStackLayout>
+                                <StackLayout BindableLayout.ItemsSource="{Binding Courts}">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate>
+                                            <Frame Padding="10" Margin="0,5" BorderColor="#B0BEC5" CornerRadius="8" HasShadow="False" BackgroundColor="White">
+                                                <VerticalStackLayout Spacing="10">
+                                                    <Label Text="{Binding MatchName}" FontSize="14" FontAttributes="Bold" TextColor="#607D8B" HorizontalOptions="Center" />
+                                                    <Grid ColumnDefinitions="*, 20, *" ColumnSpacing="5">
+                                                        <VerticalStackLayout Grid.Column="0" Spacing="5">
+                                                            <Frame BackgroundColor="{Binding Player1.GenderBackgroundColor, FallbackValue=#F5F5F5}" Padding="5" CornerRadius="5" HasShadow="False" BorderColor="Transparent">
+                                                                <Frame.GestureRecognizers><TapGestureRecognizer Tapped="OnP1Tapped" /></Frame.GestureRecognizers>
+                                                                <Label Text="{Binding P1Name}" FontSize="20" FontAttributes="Bold" TextColor="#333333" HorizontalOptions="Center" />
+                                                            </Frame>
+                                                            <Frame BackgroundColor="{Binding Player2.GenderBackgroundColor, FallbackValue=#F5F5F5}" Padding="5" CornerRadius="5" HasShadow="False" BorderColor="Transparent">
+                                                                <Frame.GestureRecognizers><TapGestureRecognizer Tapped="OnP2Tapped" /></Frame.GestureRecognizers>
+                                                                <Label Text="{Binding P2Name}" FontSize="20" FontAttributes="Bold" TextColor="#333333" HorizontalOptions="Center" />
+                                                            </Frame>
+                                                        </VerticalStackLayout>
+                                                        <Label Grid.Column="1" Text="VS" FontSize="14" FontAttributes="Bold" TextColor="#9E9E9E" VerticalOptions="Center" HorizontalOptions="Center" />
+                                                        <VerticalStackLayout Grid.Column="2" Spacing="5">
+                                                            <Frame BackgroundColor="{Binding Player3.GenderBackgroundColor, FallbackValue=#F5F5F5}" Padding="5" CornerRadius="5" HasShadow="False" BorderColor="Transparent">
+                                                                <Frame.GestureRecognizers><TapGestureRecognizer Tapped="OnP3Tapped" /></Frame.GestureRecognizers>
+                                                                <Label Text="{Binding P3Name}" FontSize="20" FontAttributes="Bold" TextColor="#333333" HorizontalOptions="Center" />
+                                                            </Frame>
+                                                            <Frame BackgroundColor="{Binding Player4.GenderBackgroundColor, FallbackValue=#F5F5F5}" Padding="5" CornerRadius="5" HasShadow="False" BorderColor="Transparent">
+                                                                <Frame.GestureRecognizers><TapGestureRecognizer Tapped="OnP4Tapped" /></Frame.GestureRecognizers>
+                                                                <Label Text="{Binding P4Name}" FontSize="20" FontAttributes="Bold" TextColor="#333333" HorizontalOptions="Center" />
+                                                            </Frame>
+                                                        </VerticalStackLayout>
+                                                    </Grid>
+                                                </VerticalStackLayout>
+                                            </Frame>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </StackLayout>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+
+        <!-- アラーム停止用オーバーレイ -->
+        <Grid x:Name="AlarmOverlay" BackgroundColor="#E6F44336" IsVisible="False">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnAlarmOverlayTapped" />
+            </Grid.GestureRecognizers>
+            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="20">
+                <Label Text="試合終了！" FontSize="48" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" />
+                <Label Text="タップしてアラームを停止" FontSize="20" TextColor="White" HorizontalOptions="Center" />
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
+
+</ContentPage>
