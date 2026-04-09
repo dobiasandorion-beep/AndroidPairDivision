@@ -60,9 +60,10 @@ public partial class MainPage : ContentPage
     {
         var membersFromDb = await _database.GetMembersAsync();
         
-        // ソート順: 参加(true)が先 ➡ 参加率(高→中→低) ➡ 登録日時(古い順)
+        // ソート順: ビジターが先頭 → 参加(true)が先 → 参加率(高→中→低) → 登録日時(古い順)
         var sortedMembers = membersFromDb
-            .OrderByDescending(m => m.IsParticipating)
+            .OrderBy(m => m.Type == MemberType.ビジター ? 0 : 1)
+            .ThenByDescending(m => m.IsParticipating)
             .ThenBy(m => (int)m.ParticipationRate)
             .ThenBy(m => m.CreatedDate)
             .ToList();
@@ -85,22 +86,33 @@ public partial class MainPage : ContentPage
         int targetIndex = 0;
         foreach (var existingMember in Members)
         {
-            // 1. 参加状態の比較 (自分が参加中 で 相手が不参加 なら先に入れる)
-            if (member.IsParticipating && !existingMember.IsParticipating) break;
-            
-            // 同じ参加状態の場合
-            if (member.IsParticipating == existingMember.IsParticipating)
+            // 1. ビジターは最上位
+            if (member.Type == MemberType.ビジター && existingMember.Type != MemberType.ビジター)
+                break;
+            if (member.Type != MemberType.ビジター && existingMember.Type == MemberType.ビジター)
             {
-                // 2. 参加率の比較 (自分が高い(数値が小さい)なら先に入れる)
-                if ((int)member.ParticipationRate < (int)existingMember.ParticipationRate) break;
-                
-                // 参加率も同じなら
-                if ((int)member.ParticipationRate == (int)existingMember.ParticipationRate)
-                {
-                    // 3. 登録日時の比較 (自分が古いなら先に入れる)
-                    if (member.CreatedDate < existingMember.CreatedDate) break;
-                }
+                targetIndex++;
+                continue;
             }
+
+            // 2. 参加状態の比較
+            if (member.IsParticipating && !existingMember.IsParticipating) break;
+            if (!member.IsParticipating && existingMember.IsParticipating)
+            {
+                targetIndex++;
+                continue;
+            }
+
+            // 3. 参加率の比較
+            if ((int)member.ParticipationRate < (int)existingMember.ParticipationRate) break;
+            if ((int)member.ParticipationRate > (int)existingMember.ParticipationRate)
+            {
+                targetIndex++;
+                continue;
+            }
+
+            // 4. 登録日時の比較
+            if (member.CreatedDate < existingMember.CreatedDate) break;
             targetIndex++;
         }
 
@@ -115,6 +127,7 @@ public partial class MainPage : ContentPage
         _currentInputType = MemberType.メンバー;
         DialogTitle.Text = "メンバー新規登録";
         DialogDeleteBtn.IsVisible = false;
+        UpdateRateSelectionVisibility();
         DialogOverlay.IsVisible = true;
     }
 
@@ -126,6 +139,7 @@ public partial class MainPage : ContentPage
         _currentInputType = MemberType.ビジター;
         DialogTitle.Text = "ビジター新規登録";
         DialogDeleteBtn.IsVisible = false;
+        UpdateRateSelectionVisibility();
         DialogOverlay.IsVisible = true;
     }
 
@@ -148,6 +162,7 @@ public partial class MainPage : ContentPage
             
             DialogTitle.Text = (_currentInputType == MemberType.ビジター) ? "ビジター編集" : "メンバー編集";
             DialogDeleteBtn.IsVisible = true;
+            UpdateRateSelectionVisibility();
             DialogOverlay.IsVisible = true;
         }
     }
@@ -189,6 +204,11 @@ public partial class MainPage : ContentPage
         Gender selectedGender = GenderFemaleFrame.BackgroundColor == Colors.White ? Gender.女性 : Gender.男性;
         ParticipationRate selectedRate = RateHighFrame.BackgroundColor == Colors.White ? ParticipationRate.高 : 
                                          RateLowFrame.BackgroundColor == Colors.White ? ParticipationRate.低 : ParticipationRate.中;
+
+        if (_currentInputType == MemberType.ビジター)
+        {
+            selectedRate = ParticipationRate.中;
+        }
 
         Member memberToSave;
 
@@ -330,5 +350,14 @@ public partial class MainPage : ContentPage
         RateHighLabel.TextColor = Color.FromArgb("#888888");
         RateMidFrame.BackgroundColor = Colors.Transparent;
         RateMidLabel.TextColor = Color.FromArgb("#888888");
+    }
+
+    private void UpdateRateSelectionVisibility()
+    {
+        if (RateSelectionArea == null)
+            return;
+
+        bool visible = _currentInputType != MemberType.ビジター;
+        RateSelectionArea.IsVisible = visible;
     }
 }
