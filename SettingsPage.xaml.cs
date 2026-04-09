@@ -18,6 +18,7 @@ public partial class SettingsPage : ContentPage
     public ObservableCollection<MatchSettingItem> MatchSettings { get; set; } = new ObservableCollection<MatchSettingItem>();
     private MatchSettingItem _selectedItem;
     private Frame _selectedFrame;
+    private bool _isInitializingSettings = false;
 
     public SettingsPage(MemberDatabase database)
     {
@@ -30,20 +31,32 @@ public partial class SettingsPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        
+        _isInitializingSettings = true;
+
         // コート数の読み込み
         int savedCourtCount = Preferences.Default.Get("CourtCount", 2);
-        CourtCountPicker.SelectedItem = savedCourtCount.ToString();
+        SetPickerSelectedValue(CourtCountPicker, savedCourtCount.ToString());
 
         // コール回数の読み込み
         int savedCallCount = Preferences.Default.Get("CallCount", 1);
-        CallCountPicker.SelectedItem = savedCallCount.ToString();
+        SetPickerSelectedValue(CallCountPicker, savedCallCount.ToString());
 
         // 試合時間の読み込み
         string savedMatchTime = Preferences.Default.Get("MatchTime", "無制限");
-        MatchTimePicker.SelectedItem = savedMatchTime;
+        SetPickerSelectedValue(MatchTimePicker, savedMatchTime);
 
         LoadMatchupSettings();
+        _isInitializingSettings = false;
+    }
+
+    private void SetPickerSelectedValue(Picker picker, string value)
+    {
+        if (picker == null || picker.ItemsSource == null)
+            return;
+
+        var items = picker.ItemsSource.Cast<object>().Select(x => x?.ToString()).ToList();
+        int index = items.IndexOf(value);
+        picker.SelectedIndex = index >= 0 ? index : 0;
     }
 
     private void OnOpenMatchSettingsClicked(object sender, EventArgs e)
@@ -148,6 +161,9 @@ public partial class SettingsPage : ContentPage
 
     private void OnSettingValueChanged(object sender, EventArgs e)
     {
+        if (_isInitializingSettings)
+            return;
+
         SaveSettings();
     }
 
