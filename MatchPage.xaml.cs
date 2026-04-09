@@ -13,6 +13,7 @@ public partial class MatchPage : ContentPage
     private int _matchRoundCount = 0;
     private CancellationTokenSource _speechCancellation;
     private CancellationTokenSource _timerCancellation;
+    private DateTime? _timerEndTime;
     private bool _isAlarming = false;
 
     public MatchPage(MemberDatabase database)
@@ -30,16 +31,25 @@ public partial class MatchPage : ContentPage
         {
             await LoadMatchDataAsync();
         }
-        
-        // タブから戻ってきたときに Timer 表示を復元
-        // （0の場合は表示を更新しない）
+
+        // バックグラウンド復帰時に残り時間を再表示し、必要ならアラームを開始
+        if (_timerEndTime.HasValue)
+        {
+            var remaining = _timerEndTime.Value - DateTime.UtcNow;
+            if (remaining <= TimeSpan.Zero)
+            {
+                MainThread.BeginInvokeOnMainThread(() => StartAlarm());
+            }
+            else
+            {
+                MainThread.BeginInvokeOnMainThread(() => TimerLabel.Text = $"{remaining.Minutes:D2}:{remaining.Seconds:D2}");
+            }
+        }
     }
 
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
-        //StopCalling();
-        //StopTimer();
         _isAlarming = false;
         AlarmOverlay.IsVisible = false;
     }
@@ -76,6 +86,7 @@ public partial class MatchPage : ContentPage
             _timerCancellation.Dispose();
             _timerCancellation = null;
         }
+        _timerEndTime = null;
         MainThread.BeginInvokeOnMainThread(() => {
             if (TimerLabel != null) TimerLabel.Text = "--:--";
         });
@@ -351,6 +362,7 @@ public partial class MatchPage : ContentPage
 
             int minutes = int.Parse(match.Value);
             int totalSeconds = minutes * 60;
+            _timerEndTime = DateTime.UtcNow.AddSeconds(totalSeconds);
 
             _timerCancellation = new CancellationTokenSource();
             var token = _timerCancellation.Token;
@@ -359,20 +371,26 @@ public partial class MatchPage : ContentPage
             {
                 try
                 {
-                    while (totalSeconds >= 0)
+                    while (!token.IsCancellationRequested)
                     {
-                        token.ThrowIfCancellationRequested();
-                        int m = totalSeconds / 60;
-                        int s = totalSeconds % 60;
+                        var remaining = _timerEndTime.Value - DateTime.UtcNow;
+                        if (remaining <= TimeSpan.Zero)
+                        {
+                            MainThread.BeginInvokeOnMainThread(() => TimerLabel.Text = "00:00");
+                            MainThread.BeginInvokeOnMainThread(StartAlarm);
+                            break;
+                        }
+
+                        int m = remaining.Minutes;
+                        int s = remaining.Seconds;
                         MainThread.BeginInvokeOnMainThread(() =>
                         {
                             if (TimerLabel != null) TimerLabel.Text = $"{m:D2}:{s:D2}";
                         });
-                        if (totalSeconds == 0) break;
-                        await Task.Delay(1000, token);
-                        totalSeconds--;
+
+                        var delay = TimeSpan.FromMilliseconds(250);
+                        await Task.Delay(delay, token);
                     }
-                    MainThread.BeginInvokeOnMainThread(() => StartAlarm());
                 }
                 catch (OperationCanceledException) { }
             }, token);
@@ -382,6 +400,9 @@ public partial class MatchPage : ContentPage
 
     private async void StartAlarm()
     {
+        if (_isAlarming)
+            return;
+
         try
         {
             _isAlarming = true;
