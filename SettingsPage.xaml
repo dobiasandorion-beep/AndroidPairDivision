@@ -35,39 +35,53 @@
                             <!-- コート数 -->
                             <Label Grid.Row="0" Grid.Column="0" Text="コート数" VerticalOptions="Center" TextColor="#333333" />
                             <HorizontalStackLayout Grid.Row="0" Grid.Column="1" Spacing="5">
-                                <Entry x:Name="CourtCountEntry" Keyboard="Numeric" Text="2" WidthRequest="60" HorizontalTextAlignment="Center" TextColor="#333333" BackgroundColor="#F5F5F5"/>
+                                <Picker x:Name="CourtCountPicker" WidthRequest="90" TextColor="#333333" BackgroundColor="#F5F5F5" SelectedIndexChanged="OnSettingValueChanged">
+                                    <Picker.ItemsSource>
+                                        <x:Array Type="{x:Type x:String}">
+                                            <x:String>1</x:String><x:String>2</x:String><x:String>3</x:String><x:String>4</x:String>
+                                            <x:String>5</x:String><x:String>6</x:String><x:String>7</x:String><x:String>8</x:String>
+                                            <x:String>9</x:String><x:String>10</x:String><x:String>11</x:String><x:String>12</x:String>
+                                            <x:String>13</x:String><x:String>14</x:String><x:String>15</x:String><x:String>16</x:String>
+                                            <x:String>17</x:String><x:String>18</x:String><x:String>19</x:String><x:String>20</x:String>
+                                        </x:Array>
+                                    </Picker.ItemsSource>
+                                </Picker>
                                 <Label Text="面" VerticalOptions="Center" TextColor="#333333" />
                             </HorizontalStackLayout>
 
                             <!-- コール回数 -->
                             <Label Grid.Row="1" Grid.Column="0" Text="コール回数" VerticalOptions="Center" TextColor="#333333" />
                             <HorizontalStackLayout Grid.Row="1" Grid.Column="1" Spacing="5">
-                                <Entry x:Name="CallCountEntry" Keyboard="Numeric" Text="1" WidthRequest="60" HorizontalTextAlignment="Center" TextColor="#333333" BackgroundColor="#F5F5F5"/>
+                                <Picker x:Name="CallCountPicker" WidthRequest="90" TextColor="#333333" BackgroundColor="#F5F5F5" SelectedIndexChanged="OnSettingValueChanged">
+                                    <Picker.ItemsSource>
+                                        <x:Array Type="{x:Type x:String}">
+                                            <x:String>1</x:String><x:String>2</x:String><x:String>3</x:String><x:String>4</x:String>
+                                            <x:String>5</x:String><x:String>6</x:String><x:String>7</x:String><x:String>8</x:String>
+                                            <x:String>9</x:String><x:String>10</x:String>
+                                        </x:Array>
+                                    </Picker.ItemsSource>
+                                </Picker>
                                 <Label Text="回" VerticalOptions="Center" TextColor="#333333" />
                             </HorizontalStackLayout>
 
                             <!-- 試合時間 -->
                             <Label Grid.Row="2" Grid.Column="0" Text="試合時間" VerticalOptions="Center" TextColor="#333333" />
-                            <Picker x:Name="MatchTimePicker" Grid.Row="2" Grid.Column="1" WidthRequest="100" TextColor="#333333" BackgroundColor="#F5F5F5">
+                            <Picker x:Name="MatchTimePicker" Grid.Row="2" Grid.Column="1" WidthRequest="100" TextColor="#333333" BackgroundColor="#F5F5F5" SelectedIndexChanged="OnSettingValueChanged">
                                 <Picker.ItemsSource>
                                     <x:Array Type="{x:Type x:String}">
                                         <x:String>無制限</x:String>
                                         <x:String>1 分</x:String><x:String>2 分</x:String><x:String>3 分</x:String><x:String>4 分</x:String>
                                         <x:String>5 分</x:String><x:String>6 分</x:String><x:String>7 分</x:String><x:String>8 分</x:String>
-                                        <x:String>9 分</x:String><x:String>10 分</x:String><x:String>15 分</x:String><x:String>20 分</x:String>
-                                        <x:String>25 分</x:String><x:String>30 分</x:String>
+                                        <x:String>9 分</x:String><x:String>10 分</x:String><x:String>11 分</x:String><x:String>12 分</x:String>
+                                        <x:String>13 分</x:String><x:String>14 分</x:String><x:String>15 分</x:String><x:String>16 分</x:String>
+                                        <x:String>17 分</x:String><x:String>18 分</x:String><x:String>19 分</x:String><x:String>20 分</x:String>
+                                        <x:String>21 分</x:String><x:String>22 分</x:String><x:String>23 分</x:String><x:String>24 分</x:String>
+                                        <x:String>25 分</x:String><x:String>26 分</x:String><x:String>27 分</x:String><x:String>28 分</x:String>
+                                        <x:String>29 分</x:String><x:String>30 分</x:String>
                                     </x:Array>
                                 </Picker.ItemsSource>
                             </Picker>
                         </Grid>
-                        
-                        <Button Text="設定を保存" 
-                                Clicked="OnSaveSettingsClicked" 
-                                BackgroundColor="#4CAF50" 
-                                TextColor="White" 
-                                CornerRadius="8" 
-                                HeightRequest="45"
-                                Margin="0,5,0,0"/>
                     </VerticalStackLayout>
                 </Frame>
 

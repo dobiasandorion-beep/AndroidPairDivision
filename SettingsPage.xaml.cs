@@ -33,11 +33,11 @@ public partial class SettingsPage : ContentPage
         
         // コート数の読み込み
         int savedCourtCount = Preferences.Default.Get("CourtCount", 2);
-        CourtCountEntry.Text = savedCourtCount.ToString();
+        CourtCountPicker.SelectedItem = savedCourtCount.ToString();
 
         // コール回数の読み込み
         int savedCallCount = Preferences.Default.Get("CallCount", 1);
-        CallCountEntry.Text = savedCallCount.ToString();
+        CallCountPicker.SelectedItem = savedCallCount.ToString();
 
         // 試合時間の読み込み
         string savedMatchTime = Preferences.Default.Get("MatchTime", "無制限");
@@ -146,20 +146,28 @@ public partial class SettingsPage : ContentPage
         }
     }
 
-    private async void OnSaveSettingsClicked(object sender, EventArgs e)
+    private void OnSettingValueChanged(object sender, EventArgs e)
     {
-        if (int.TryParse(CourtCountEntry.Text, out int courtCount) && 
-            int.TryParse(CallCountEntry.Text, out int callCount))
+        SaveSettings();
+    }
+
+    private void SaveSettings()
+    {
+        if (!int.TryParse(CourtCountPicker.SelectedItem?.ToString(), out int courtCount))
         {
-            Preferences.Default.Set("CourtCount", courtCount);
-            Preferences.Default.Set("CallCount", callCount);
-            Preferences.Default.Set("MatchTime", MatchTimePicker.SelectedItem?.ToString() ?? "無制限");
-            await DisplayAlert("完了", "設定を保存しました。", "OK");
+            courtCount = 2;
         }
-        else
+
+        if (!int.TryParse(CallCountPicker.SelectedItem?.ToString(), out int callCount))
         {
-            await DisplayAlert("エラー", "数字を正しく入力してください。", "OK");
+            callCount = 1;
         }
+
+        string matchTime = MatchTimePicker.SelectedItem?.ToString() ?? "無制限";
+
+        Preferences.Default.Set("CourtCount", courtCount);
+        Preferences.Default.Set("CallCount", callCount);
+        Preferences.Default.Set("MatchTime", matchTime);
     }
 
     private async void OnResetEventClicked(object sender, EventArgs e)
