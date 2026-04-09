@@ -52,6 +52,7 @@ public partial class MainPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        await _database.GetPreloadTask();
         await LoadMembersAsync();
     }
 
