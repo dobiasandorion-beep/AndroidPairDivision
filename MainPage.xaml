@@ -136,7 +136,7 @@
                         </VerticalStackLayout>
 
                         <!-- 参加率選択 -->
-                        <VerticalStackLayout Spacing="5">
+                        <VerticalStackLayout x:Name="RateSelectionArea" Spacing="5">
                             <Label Text="参加率" FontSize="12" TextColor="#888888" />
                             <Border Stroke="Transparent" BackgroundColor="#E0E0E0" Padding="2" StrokeShape="RoundRectangle 8,8,8,8">
                                 <Grid ColumnDefinitions="*, *, *" ColumnSpacing="0">

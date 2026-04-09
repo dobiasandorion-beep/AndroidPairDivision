@@ -409,12 +409,14 @@ public partial class MatchPage : ContentPage
             if (AlarmOverlay != null) AlarmOverlay.IsVisible = true;
             var options = new SpeechOptions() { Volume = 1.0f, Pitch = 1.0f };
 
+            _speechCancellation = new CancellationTokenSource();
+
             // アラーム停止まで音声を繰り返す
-            while (_isAlarming)
+            while (_isAlarming && !_speechCancellation.Token.IsCancellationRequested)
             {
-                try { await TextToSpeech.Default.SpeakAsync("試合終了です。コートを空けてください。", options); }
+                try { await TextToSpeech.Default.SpeakAsync("試合終了です。コートを空けてください。", options, _speechCancellation.Token); }
                 catch { }
-                if (_isAlarming) await Task.Delay(1000);
+                if (_isAlarming && !_speechCancellation.Token.IsCancellationRequested) await Task.Delay(1000, _speechCancellation.Token);
             }
         }
         catch
@@ -425,6 +427,7 @@ public partial class MatchPage : ContentPage
 
     private void OnAlarmOverlayTapped(object sender, EventArgs e)
     {
+        StopCalling();
         _isAlarming = false;
         AlarmOverlay.IsVisible = false;
     }
@@ -470,13 +473,14 @@ public partial class MatchPage : ContentPage
         _speechCancellation = new CancellationTokenSource();
         var token = _speechCancellation.Token;
         var sb = new System.Text.StringBuilder();
-        sb.Append("試合をコールします。");
+        sb.Append("<speak>試合をコールします。");
         foreach (var court in round.Courts)
         {
-            sb.Append($"{court.MatchName}。");
-            sb.Append($"{GetMemberCallName(court.Player1)}、{GetMemberCallName(court.Player2)} 対 ");
+            sb.Append($"{court.MatchName}。<break time=\"300ms\"/>");
+            sb.Append($"{GetMemberCallName(court.Player1)}、{GetMemberCallName(court.Player2)}、<break time=\"200ms\"/>対<break time=\"200ms\"/>");
             sb.Append($"{GetMemberCallName(court.Player3)}、{GetMemberCallName(court.Player4)}。");
         }
+        sb.Append("</speak>");
         string callText = sb.ToString();
         var options = new SpeechOptions() { Volume = 1.0f, Pitch = 0.9f };
         try
