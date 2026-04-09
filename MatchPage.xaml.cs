@@ -431,11 +431,6 @@ public partial class MatchPage : ContentPage
 
     private async void OnCancelMatchClicked(object sender, EventArgs e)
     {
-        StopCalling();
-        StopTimer();
-        _isAlarming = false;
-        AlarmOverlay.IsVisible = false;
-
         if (MatchRounds.Count == 0)
         {
             await DisplayAlert("エラー", "キャンセルする試合がありません。", "OK");
@@ -444,23 +439,28 @@ public partial class MatchPage : ContentPage
 
         var latestRound = MatchRounds[0];
         bool confirm = await DisplayAlert("確認", $"第 {latestRound.RoundNumber} 回戦の組み合わせをすべてキャンセルし、回数を戻しますか？", "はい", "いいえ");
-        if (confirm)
+        if (!confirm)
+            return;
+
+        StopCalling();
+        StopTimer();
+        _isAlarming = false;
+        AlarmOverlay.IsVisible = false;
+
+        foreach (var match in latestRound.Courts)
         {
-            foreach (var match in latestRound.Courts)
-            {
-                await DecrementMatchCountAsync(match.Player1);
-                await DecrementMatchCountAsync(match.Player2);
-                await DecrementMatchCountAsync(match.Player3);
-                await DecrementMatchCountAsync(match.Player4);
-            }
-            foreach (var bm in latestRound.BreakMembers)
-            {
-                await DecrementBreakCountAsync(bm);
-            }
-            MatchRounds.RemoveAt(0);
-            if (_matchRoundCount > 0) _matchRoundCount--;
-            SaveMatchData();
+            await DecrementMatchCountAsync(match.Player1);
+            await DecrementMatchCountAsync(match.Player2);
+            await DecrementMatchCountAsync(match.Player3);
+            await DecrementMatchCountAsync(match.Player4);
         }
+        foreach (var bm in latestRound.BreakMembers)
+        {
+            await DecrementBreakCountAsync(bm);
+        }
+        MatchRounds.RemoveAt(0);
+        if (_matchRoundCount > 0) _matchRoundCount--;
+        SaveMatchData();
     }
 
     private async Task CallMatchesAsync(MatchupRound round)
