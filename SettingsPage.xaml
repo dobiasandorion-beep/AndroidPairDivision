@@ -16,7 +16,7 @@
                     <VerticalStackLayout Spacing="10">
                         <Label Text="組み合わせ設定" FontSize="16" FontAttributes="Bold" TextColor="#333333" />
                         <Label Text="試合のペアリングに関する詳細設定を行います。" FontSize="12" TextColor="#888888" />
-                        <Button Text="優先順位を設定する" 
+                        <Button Text="組み合わせ条件を設定する" 
                                 Clicked="OnOpenMatchSettingsClicked" 
                                 BackgroundColor="#2196F3" 
                                 TextColor="White" 
@@ -40,9 +40,6 @@
                                         <x:Array Type="{x:Type x:String}">
                                             <x:String>1</x:String><x:String>2</x:String><x:String>3</x:String><x:String>4</x:String>
                                             <x:String>5</x:String><x:String>6</x:String><x:String>7</x:String><x:String>8</x:String>
-                                            <x:String>9</x:String><x:String>10</x:String><x:String>11</x:String><x:String>12</x:String>
-                                            <x:String>13</x:String><x:String>14</x:String><x:String>15</x:String><x:String>16</x:String>
-                                            <x:String>17</x:String><x:String>18</x:String><x:String>19</x:String><x:String>20</x:String>
                                         </x:Array>
                                     </Picker.ItemsSource>
                                 </Picker>
@@ -89,7 +86,7 @@
                 <Frame Padding="15" BorderColor="#E0E0E0" CornerRadius="8" HasShadow="False" BackgroundColor="White">
                     <VerticalStackLayout Spacing="10">
                         <Label Text="データ管理" FontSize="16" FontAttributes="Bold" TextColor="#333333" />
-                        <Label Text="今日のイベントデータをリセットします。" FontSize="12" TextColor="#888888" />
+                        <Label Text="現在の参加情報をリセットします。" FontSize="12" TextColor="#888888" />
                         <Button Text="イベントリセット" 
                                 Clicked="OnResetEventClicked" 
                                 BackgroundColor="#F44336" 
@@ -106,10 +103,10 @@
         <Grid x:Name="MatchSettingsOverlay" BackgroundColor="#80000000" IsVisible="False">
             <Frame VerticalOptions="Center" HorizontalOptions="Center" WidthRequest="340" Padding="20" CornerRadius="12" BackgroundColor="White">
                 <Grid RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="5">
-                    <Label Grid.Row="0" Text="組み合わせの優先順位" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center" TextColor="#333333" />
+                    <Label Grid.Row="0" Text="組み合わせ設定" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center" TextColor="#333333" />
                     
-                    <Label Grid.Row="1" Text="※チェック項目を上から優先します。&#10;項目をタップして順番を入れ替えられます。" 
-                           FontSize="12" TextColor="#F44336" HorizontalOptions="Center" HorizontalTextAlignment="Center" Margin="0,5" />
+                    <!-- <Label Grid.Row="1" Text="※チェック項目を上から優先します。&#10;項目をタップして順番を入れ替えられます。" 
+                           FontSize="12" TextColor="#F44336" HorizontalOptions="Center" HorizontalTextAlignment="Center" Margin="0,5" /> -->
 
                     <CollectionView x:Name="SettingsCollectionView" 
                                     Grid.Row="2" 

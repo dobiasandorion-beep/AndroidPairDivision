@@ -35,7 +35,7 @@
             <!-- 対戦表の一覧表示 -->
             <CollectionView x:Name="MatchRoundsCollectionView" Grid.Row="1" Margin="10">
                 <CollectionView.EmptyView>
-                    <Label Text="「次の試合」を押して組み合わせを作成してください" HorizontalOptions="Center" VerticalOptions="Center" TextColor="Gray" />
+                    <Label Text="「次の試合」から組み合わせを作成してください" HorizontalOptions="Center" VerticalOptions="Center" TextColor="Gray" />
                 </CollectionView.EmptyView>
                 <CollectionView.ItemTemplate>
                     <DataTemplate>

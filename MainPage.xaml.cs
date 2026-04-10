@@ -73,6 +73,14 @@ public partial class MainPage : ContentPage
         {
             Members.Add(member);
         }
+
+        UpdateParticipantCountLabel();
+    }
+
+    private void UpdateParticipantCountLabel()
+    {
+        var count = Members.Count(m => m.IsParticipating);
+        ParticipantCountLabel.Text = $"参加者: {count}人";
     }
 
     // メンバーをソート順に従って正しい位置に挿入（または移動）する
@@ -180,6 +188,7 @@ public partial class MainPage : ContentPage
             
             // ここでは SortAndInsertMember(member) を呼び出さないことで、
             // リスト内の位置移動（ソート）を発生させず、その場で見た目だけを変えます。
+            UpdateParticipantCountLabel();
         }
     }
 
@@ -242,6 +251,7 @@ public partial class MainPage : ContentPage
             SortAndInsertMember(memberToSave);
         }
 
+        UpdateParticipantCountLabel();
         NameEntry.IsEnabled = false;
         ReadingEntry.IsEnabled = false;
         DialogOverlay.IsVisible = false;
@@ -262,6 +272,7 @@ public partial class MainPage : ContentPage
             {
                 await _database.DeleteMemberAsync(memberToRemove);
                 Members.Remove(memberToRemove);
+                UpdateParticipantCountLabel();
             }
             DialogOverlay.IsVisible = false;
         }

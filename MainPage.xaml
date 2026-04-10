@@ -14,11 +14,18 @@
     </ContentPage.Resources>
 
     <Grid>
-        <!-- メイン画面（一覧表示と新規ボタン） -->
-        <Grid RowDefinitions="*, Auto" Padding="15">
+        <!-- メイン画面（参加者数表示、一覧表示と新規ボタン） -->
+        <Grid RowDefinitions="Auto, *, Auto" Padding="15">
+            <Label x:Name="ParticipantCountLabel"
+                   Text="参加者: 0人"
+                   FontSize="16"
+                   FontAttributes="Bold"
+                   TextColor="#FF18B131"
+                   Margin="0,0,0,10" />
+
             <!-- メンバー一覧 -->
             <CollectionView x:Name="MembersCollectionView" 
-                            Grid.Row="0" 
+                            Grid.Row="1" 
                             SelectionMode="None">
                 <CollectionView.EmptyView>
                     <Label Text="登録されているメンバーがいません。" HorizontalOptions="Center" VerticalOptions="Center" TextColor="Gray" />
@@ -43,9 +50,6 @@
                                     
                                     <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
                                         <Label Text="{Binding Reading}" FontSize="12" TextColor="#888888" />
-                                        <Frame Padding="5,2" BackgroundColor="#E3F2FD" CornerRadius="4" HasShadow="False" BorderColor="Transparent">
-                                            <Label Text="{Binding ParticipationRate, StringFormat='参加率: {0}'}" FontSize="10" TextColor="#1976D2" FontAttributes="Bold" />
-                                        </Frame>
                                     </HorizontalStackLayout>
                                 </VerticalStackLayout>
                                 
@@ -82,7 +86,7 @@
             </CollectionView>
 
             <!-- 新規ボタンエリア（画面下部） -->
-            <Grid Grid.Row="1" ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,15,0,0">
+            <Grid Grid.Row="2" ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,15,0,0">
                 <Button Grid.Column="0" 
                         Text="メンバー登録" 
                         Clicked="OnNewMemberClicked" 
@@ -137,7 +141,7 @@
 
                         <!-- 参加率選択 -->
                         <VerticalStackLayout x:Name="RateSelectionArea" Spacing="5">
-                            <Label Text="参加率" FontSize="12" TextColor="#888888" />
+                            <Label Text="イベント参加率" FontSize="12" TextColor="#888888" />
                             <Border Stroke="Transparent" BackgroundColor="#E0E0E0" Padding="2" StrokeShape="RoundRectangle 8,8,8,8">
                                 <Grid ColumnDefinitions="*, *, *" ColumnSpacing="0">
                                     <Frame x:Name="RateHighFrame" Grid.Column="0" Padding="0,8" HasShadow="False" CornerRadius="6" BackgroundColor="Transparent">

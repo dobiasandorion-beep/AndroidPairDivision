@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Text;
 using System.Text.Json;
 using Android.Provider;
 using MyAndroidApp.Models;
@@ -168,7 +169,7 @@ public partial class MatchPage : ContentPage
 
         if (participatingMembers.Count < 4)
         {
-            await DisplayAlert("エラー", "参加者が4人未満のため、試合を組めません。", "OK");
+            await DisplayAlert("エラー", "参加者が4人未満のため、試合を組めません。\r\nメンバー管理画面から参加登録をしてください。", "OK");
             return;
         }
 
@@ -184,7 +185,7 @@ public partial class MatchPage : ContentPage
 
         if (matchesToCreate == 0)
         {
-            await DisplayAlert("エラー", "参加者が4人未満のため、試合を組めません。", "OK");
+            await DisplayAlert("エラー", "参加者が4人未満のため、試合を組めません。\r\nメンバー管理画面から参加登録をしてください。", "OK");
             return;
         }
 
@@ -428,6 +429,7 @@ public partial class MatchPage : ContentPage
     private void OnAlarmOverlayTapped(object sender, EventArgs e)
     {
         StopCalling();
+        StopTimer();
         _isAlarming = false;
         AlarmOverlay.IsVisible = false;
     }
@@ -489,6 +491,17 @@ public partial class MatchPage : ContentPage
             {
                 await TextToSpeech.Default.SpeakAsync(callText, options, cancelToken: token);
                 if (i < callCount - 1) await Task.Delay(1000, token);
+            }
+            if (callCount > 0 && round.BreakMembers.Any())
+            {
+                var sb2 = new System.Text.StringBuilder();
+                sb2.Append($"休憩は");
+                foreach (var breakMember in round.BreakMembers)
+                {
+                    sb2.Append($"{GetMemberCallName(breakMember)}、");
+                }
+                sb2.Append($"です。");
+                await TextToSpeech.Default.SpeakAsync(sb2.ToString(), options, cancelToken: token);
             }
         }
         catch (OperationCanceledException) { }
