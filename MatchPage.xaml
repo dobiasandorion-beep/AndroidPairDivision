@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:MyAndroidApp"
              x:Class="MyAndroidApp.MatchPage"
              Title="対戦表">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <Grid>
         <Grid RowDefinitions="Auto, *">
@@ -42,7 +49,7 @@
                         <Frame Padding="12" Margin="0,6" BorderColor="#2196F3" CornerRadius="10" HasShadow="True" BackgroundColor="{Binding BackgroundColor}">
                             <VerticalStackLayout Spacing="10">
                                 <!--<Label Text="{Binding RoundTitle}" FontSize="10" FontAttributes="Bold" TextColor="#2196F3" HorizontalOptions="Center" />-->
-                                <VerticalStackLayout Spacing="2" Margin="0,0,0,8">
+                                <VerticalStackLayout Spacing="2" Margin="0,0,0,8" IsVisible="{Binding BreakMembers.Count, Converter={StaticResource CountToVisibilityConverter}}">
                                     <Label Text="休憩メンバー" FontSize="12" TextColor="#757575" HorizontalOptions="Center" />
                                     <FlexLayout BindableLayout.ItemsSource="{Binding BreakMembers}" Wrap="Wrap" JustifyContent="Center" AlignItems="Center">
                                         <BindableLayout.ItemTemplate>

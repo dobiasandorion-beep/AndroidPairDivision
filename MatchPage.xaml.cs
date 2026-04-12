@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using Android.Provider;
@@ -6,6 +7,20 @@ using MyAndroidApp.Models;
 using MyAndroidApp.Services;
 
 namespace MyAndroidApp;
+
+public class CountToVisibilityConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is int count)
+        {
+            return count > 0;
+        }
+        return false;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
+}
 
 public partial class MatchPage : ContentPage
 {
