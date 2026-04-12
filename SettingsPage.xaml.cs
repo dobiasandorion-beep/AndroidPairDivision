@@ -34,7 +34,7 @@ public partial class SettingsPage : ContentPage
         _isInitializingSettings = true;
 
         // コート数の読み込み
-        int savedCourtCount = Preferences.Default.Get("CourtCount", 2);
+        int savedCourtCount = Preferences.Default.Get("CourtCount", 3);
         SetPickerSelectedValue(CourtCountPicker, savedCourtCount.ToString());
 
         // コール回数の読み込み
@@ -74,10 +74,10 @@ public partial class SettingsPage : ContentPage
         {
             settings = new List<MatchSettingItem>
             {
-                new MatchSettingItem { Key = "PrioritizeGender", DisplayName = "男子/女子ダブルスを優先する", IsEnabled = true },
+                new MatchSettingItem { Key = "PrioritizeGender", DisplayName = "男子/女子ダブルスを優先する", IsEnabled = false },
                 new MatchSettingItem { Key = "PrioritizeMixed", DisplayName = "ミックスを優先する", IsEnabled = false },
-                new MatchSettingItem { Key = "AvoidSingleFemale", DisplayName = "女性が一人だけにならないようにする", IsEnabled = true },
-                new MatchSettingItem { Key = "AvoidSingleMale", DisplayName = "男性が一人だけにならないようにする", IsEnabled = true }
+                new MatchSettingItem { Key = "AvoidSingleFemale", DisplayName = "女性が一人だけにならないようにする", IsEnabled = false },
+                new MatchSettingItem { Key = "AvoidSingleMale", DisplayName = "男性が一人だけにならないようにする", IsEnabled = false }
             };
         }
         else

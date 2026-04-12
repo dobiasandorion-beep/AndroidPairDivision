@@ -173,7 +173,7 @@ public partial class MatchPage : ContentPage
             return;
         }
 
-        int courtCount = Preferences.Default.Get("CourtCount", 2);
+        int courtCount = Preferences.Default.Get("CourtCount", 3);
         string settingsJson = Preferences.Default.Get("MatchupSettings", string.Empty);
         var settingsItems = string.IsNullOrEmpty(settingsJson) 
             ? new List<MatchSettingItem>() 
@@ -470,7 +470,7 @@ public partial class MatchPage : ContentPage
 
     private async Task CallMatchesAsync(MatchupRound round)
     {
-        int callCount = Preferences.Default.Get("CallCount", 1);
+        int callCount = Preferences.Default.Get("CallCount", 0);
         if (callCount <= 0) return;
         _speechCancellation = new CancellationTokenSource();
         var token = _speechCancellation.Token;
